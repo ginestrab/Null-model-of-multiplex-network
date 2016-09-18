@@ -19,6 +19,6 @@ These codes can be redistributed and/or modified
  If you use these codes please cite 
 
  [1] G. Bianconi
- Statistical mechanics of multiplex networks: Entropy and overlap." 
+ Statistical mechanics of multiplex networks: Entropy and overlap. 
  Physical Review E 87, no. 6 (2013): 062806.
  
