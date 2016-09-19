@@ -6,7 +6,7 @@ This repository contains:
 
 2) Triplex_Null_Model.m a matlab code for randomizing a triplex network keeping the average multidegree distribution
 
-3) Swap_Duplex_Null_Model.m a matlab for randomizing a duplex keeping the exacr multidegree distribution
+3) Swap_Duplex_Null_Model.m a matlab for randomizing a duplex keeping the exact multidegree distribution
 
 These codes can be redistributed and/or modified
  under the terms of the GNU General Public License as published by
