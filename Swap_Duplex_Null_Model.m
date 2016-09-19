@@ -39,6 +39,8 @@ Teq=10;
 A{1}=A{1}>0;
 A{2}=A{2}>0;
 
+
+
 [I10,J10,V]=find(tril(A{1}.*(1-A{2})));
 [I01,J01,V]=find(tril((1-A{1}).*(A{2})));
 [I11,J11,V]=find(tril(A{1}.*A{2}));
@@ -47,17 +49,20 @@ C=cell(P,1);
 nm=0;
  for nrun=1:(Teq*P),
      for ix=1:N,
+         if(numel(I01)>1),
          n1=ceil(numel(I01)*rand(1));
          i1=I01(n1);
          j1=J01(n1);
          n2=ceil(numel(I01)*rand(1));
          i2=I01(n2);
          j2=J01(n2);
-          
-         while(((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1)))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1)==0),
-         n2=ceil(numel(I01)*rand(1));
-         i2=I01(n2);
-         j2=J01(n2);
+         
+         
+         while(abs((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1))==0),
+             
+             n2=ceil(numel(I01)*rand(1));
+             i2=I01(n2);
+             j2=J01(n2);
          
          end
          A{2}(i1,j2)=1;
@@ -70,7 +75,9 @@ nm=0;
          A{2}(j2,i2)=0;
          J01(n1)=j2;
          J01(n2)=j1;
+         end
          
+         if(numel(I10)>1)
          n1=ceil(numel(I10)*rand(1));
          i1=I10(n1);
          j1=J10(n1);
@@ -78,7 +85,7 @@ nm=0;
          i2=I10(n2);
          j2=J10(n2);
          
-         while(((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1))==0),
+         while(((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1)*(i1-j1))==0),
          
          n2=ceil(numel(I10)*rand(1));
          i2=I10(n2);
@@ -97,8 +104,9 @@ nm=0;
          J10(n1)=j2;
          J10(n2)=j1;
         
+         end
          
-         
+         if(numel(I11)>1),
          n1=ceil(numel(I11)*rand(1));
          i1=I11(n1);
          j1=J11(n1);
@@ -106,8 +114,8 @@ nm=0;
          i2=I11(n2);
          j2=J11(n2);
          
-         while(((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1)))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1)==0),
-         
+         while((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1)*(j1-i1)==0),
+
          n2=ceil(numel(I11)*rand(1));
          i2=I11(n2);
          j2=J11(n2);
@@ -132,6 +140,7 @@ nm=0;
          A{2}(j2,i2)=0;
          J11(n1)=j2;
          J11(n2)=j1;
+         end
      end
      
      if (mod(nrun,Teq)==0),
