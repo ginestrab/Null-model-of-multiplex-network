@@ -1,13 +1,12 @@
-% %%%%%%%%%%%%%Duplex Null Model %%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%Swap Duplex Null Model %%%%%%%%%%%%%%%%%%%
 % This code generates a null model of a undirected unweighted duplex network with 
-% the same average multilinks as the original multiplex network
-% This is generated with a canonical mutliplex ensemble, i.e. 
-% and exponential multiplex network ensemble.
+% the same  multidegree sequence as the original multiplex network
+% This is generated with a microcanonical multiplex ensemble
 %
 %It takes as an input a cell array A of elements 
 %A{1} adjacency matrix of the first layer of dimension N
 %A{2}  adjacency matrix of the second layer of dimension N
-% N total number of nodes in the multiplex
+% N total number of nodes in the multiplex  
 % P number of desired randomized null models
 %
 % The output is  a cell array C of dimension P
@@ -35,63 +34,130 @@
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [C] = Duplex_Null_Model(A,N,P)
-
+function [C] = Swap_Duplex_Null_Model(A,N,P)
+Teq=40;
 A{1}=A{1}>0;
 A{2}=A{2}>0;
 
-k10=sum(A{1}.*(1-A{2}))';
-k01=sum(A{2}.*(1-A{1}))';
-k11=sum(A{1}.*A{2})';
-
- 
 
 
+[I10,J10,V]=find(tril(A{1}.*(1-A{2})));
+[I01,J01,V]=find(tril((1-A{1}).*(A{2})));
+[I11,J11,V]=find(tril(A{1}.*A{2}));
 
-tol=10^(-3);
-
-z10=k10;
-z01=k01;
-z11=k11;
-
-
-
-Dold=100*(rand(N,N));
-n=1;
-while(n<200)
-    n=n+1;
-       U10=(ones(N,1)*z10' );
-       U01=(ones(N,1)*z01' );
-       U11=(ones(N,1)*z11' );
-       D=ones(N,N) +  z10*z10'+z01*z01'+z11*z11';
-       
-       z10=k10 ./ (sum( ( U10./D - diag(diag(U10./D)) )' )' );
-       z10=(z10.*(k10>0)+0*(k10==0));
-       
-       z01=k01 ./ (sum( ( U01./D - diag(diag(U01./D)) )' )' );
-       z01=(z01.*(k01>0)+0*(k01==0));
-       
-       z11=k11 ./ (sum( ( U11./D - diag(diag(U11./D)) )' )' );
-       z11=(z11.*(k11>0)+0*(k11==0));
-       err=sum(sum((D-Dold).^2))/N
-       Dold=D;
-end
-
-p10=z10*z10'./D;
-p01=z01*z01'./D;
-p11=z11*z11'./D;
-
-B=cell(2,1);
 C=cell(P,1);
-for n=1:P,
-x=rand(N,N);
-
-B{1}=tril(ones(N,N).*(x<((z10*z10'+z11*z11')./D)));
-B{2}=tril((x<((z10*z10'+z11*z11'+z01*z01')./D)).*(x>((z10*z10')./D)));
-B{1}=B{1}+B{1}';
-B{2}=B{2}+B{2}';
-C{n}=B;
+nm=0;
+ for nrun=1:(Teq*N*P),
+     
+         if(numel(I01)>1),
+         n1=ceil(numel(I01)*rand(1));
+         i1=I01(n1);
+         j1=J01(n1);
+         n2=ceil(numel(I01)*rand(1));
+         i2=I01(n2);
+         j2=J01(n2);
+         
+         
+         while(abs((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1))==0),
+            
+            n1=ceil(numel(I01)*rand(1));
+            i1=I01(n1);
+            j1=J01(n1);
+         
+             n2=ceil(numel(I01)*rand(1));
+             i2=I01(n2);
+             j2=J01(n2);
+         
+         end
+         A{2}(i1,j2)=1;
+         A{2}(j2,i1)=1;
+         A{2}(i2,j1)=1;
+         A{2}(j1,i2)=1;
+         A{2}(i1,j1)=0;
+         A{2}(j1,i1)=0;
+         A{2}(i2,j2)=0;
+         A{2}(j2,i2)=0;
+         J01(n1)=j2;
+         J01(n2)=j1;
+         end
+         
+         if(numel(I10)>1)
+         n1=ceil(numel(I10)*rand(1));
+         i1=I10(n1);
+         j1=J10(n1);
+         n2=ceil(numel(I10)*rand(1));
+         i2=I10(n2);
+         j2=J10(n2);
+         
+         while(((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1)*(i1-j1))==0),
+            n1=ceil(numel(I10)*rand(1));
+            i1=I10(n1);
+            j1=J10(n1);
+         n2=ceil(numel(I10)*rand(1));
+         i2=I10(n2);
+         j2=J10(n2);
+         
+         end
+         A{1}(i1,j2)=1;
+         A{1}(j2,i1)=1;
+         A{1}(i2,j1)=1;
+         A{1}(j1,i2)=1;
+         A{1}(i1,j1)=0;
+         A{1}(j1,i1)=0;
+         A{1}(i2,j2)=0;
+         A{1}(j2,i2)=0;
+         
+         J10(n1)=j2;
+         J10(n2)=j1;
+        
+         end
+         
+         if(numel(I11)>1),
+         n1=ceil(numel(I11)*rand(1));
+         i1=I11(n1);
+         j1=J11(n1);
+         n2=ceil(numel(I11)*rand(1));
+         i2=I11(n2);
+         j2=J11(n2);
+         
+         while((1-A{1}(i1,j2))*(1-A{2}(i1,j2))*(1-A{1}(i2,j1))*(1-A{2}(i2,j1))*(i1-i2)*(j1-j2)*(j1-i2)*(j2-i1)*(j1-i1)==0),
+   n1=ceil(numel(I11)*rand(1));
+            i1=I11(n1);
+            j1=J11(n1);
+         n2=ceil(numel(I11)*rand(1));
+         i2=I11(n2);
+         j2=J11(n2);
+       
+         
+         end
+         A{1}(i1,j2)=1;
+         A{1}(j2,i1)=1;
+         A{1}(i2,j1)=1;
+         A{1}(j1,i2)=1;
+         A{1}(i1,j1)=0;
+         A{1}(j1,i1)=0;
+         A{1}(i2,j2)=0;
+         A{1}(j2,i2)=0;
+         A{2}(i1,j2)=1;
+         A{2}(j2,i1)=1;
+         A{2}(i2,j1)=1;
+         A{2}(j1,i2)=1;
+         A{2}(i1,j1)=0;
+         A{2}(j1,i1)=0;
+         A{2}(i2,j2)=0;
+         A{2}(j2,i2)=0;
+         J11(n1)=j2;
+         J11(n2)=j1;
+         end
+     end
+     
+     if (mod(nrun,Teq*N)==0),
+         nm=nm+1;
+         C{nm}=A;
+     end
 end
+
+
 
 
 
